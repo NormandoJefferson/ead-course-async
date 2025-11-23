@@ -8,7 +8,7 @@ spring:
     name: ead-course-service
   #  configuracao do banco
   datasource:
-    url: jdbc:postgresql://localhost:5432/ead-course
+    url: jdbc:postgresql://localhost:5432/ead-course-async
     username: postgres
     password: 1234567
 
