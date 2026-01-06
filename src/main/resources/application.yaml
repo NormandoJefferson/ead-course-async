@@ -11,7 +11,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/ead-course-async
     username: postgres
     password: 12345
-
   jpa:
     hibernate:
       ddl-auto: update  # cria as tabelas automaticamente no banco
@@ -21,11 +20,9 @@ spring:
     properties:
       hibernate:
         show_sql: true # mostra as consultas no log
-
   rabbitmq:
-    addresses: amqps://jgsmgoyt:B2MgZ72W7S3HQlXeN0DnSDj3dIPAWokP@moose.rmq.cloudamqp.com/jgsmgoyt # url do cloudamqp
+    addresses: amqps://jgsmgoyt:B2MgZ72W7S3HQlXeN0DnSDj3dIPAWokP@moose.rmq.cloudamqp.com/jgsmgoyt
 
-# configuração de logs
 logging:
   level:
     com.ead: TRACE
@@ -37,11 +34,16 @@ ead:
   api:
     url:
       authuser: 'http://ead-authuser-service/ead-authuser' # nome do servico de authuser e o seu context path
+  broker:
+    exchange:
+      userEventExchange: ead.userevent
+    queue:
+      userEventQueue:
+        name: ead.userevent.ms.course
 
 eureka:
   client:
     serviceUrl:
       defaultZone: 'http://localhost:8761/eureka' # endereco onde o eureka esta disponivel
-
   instance:
     hostname: localhost # para se registrar utilizando host

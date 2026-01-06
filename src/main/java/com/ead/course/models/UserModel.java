@@ -30,7 +30,7 @@ public class UserModel implements Serializable {
     private String fullName;
 
     @Column(nullable = false)
-    private String useStatus;
+    private String userStatus;
 
     @Column(nullable = false)
     private String userType;
