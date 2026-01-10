@@ -1,12 +1,16 @@
 package com.ead.course.validation;
 
 import com.ead.course.dtos.CourseDto;
+import com.ead.course.enums.UserType;
+import com.ead.course.models.UserModel;
+import com.ead.course.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -16,6 +20,9 @@ public class CourseValidator implements Validator {
     @Qualifier("defaultValidator") // Evita conflitos quando se tem mais de um validator
     private Validator validator;
 
+    @Autowired
+    private UserService userService;
+
     // Implementação obrigatória da interface Validator
     @Override
     public boolean supports(Class<?> aClass) {
@@ -23,8 +30,9 @@ public class CourseValidator implements Validator {
     }
 
     @Override
-    public void validate (Object o,
-                          Errors errors
+    public void validate (
+            Object o,
+            Errors errors
     ) {
         CourseDto courseDto = (CourseDto) o; // Casting para transformar object em CourseDto
 
@@ -36,26 +44,19 @@ public class CourseValidator implements Validator {
         }
     }
 
-    private void validateUserInstructor(UUID instructorId, Errors errors) {
+    private void validateUserInstructor (
+            UUID instructorId,
+            Errors errors
+    ) {
+        Optional<UserModel> userModelOptional = userService.findById(instructorId);
 
-//        ResponseEntity<UserDto> responseUserInstructor;
+        if (!userModelOptional.isPresent()) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found");
+        }
 
-//        try {
-//            responseUserInstructor = authUserClient.getOneUserById(instructorId); // Busca o usuário em authuser
-//
-//            // Se for do tipo  STUDENT vamos setar um erro
-//            if (responseUserInstructor.getBody().getUserType().equals(UserType.STUDENT)) {
-//                // Campo com erro - erro - msg de erro
-//                errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN");
-//            }
-//        } catch (HttpStatusCodeException e) {
-//
-//            // Se o usuário não for encontrado em authuser
-//            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-//                // Campo com erro - erro - msg de erro
-//                errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found");
-//            }
-//        }
+        if (userModelOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN");
+        }
     }
 
 }
