@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,6 +64,23 @@ public class CourseServiceImpl implements CourseService {
             Pageable pageable
     ) {
         return courseRepository.findAll(courseSpec, pageable);
+    }
+
+    @Override
+    public boolean existsByCourseAndUser (
+            UUID courseId,
+            UUID userId
+    ) {
+        return courseRepository.existsByCourseAndUser(courseId, userId);
+    }
+
+    @Transactional
+    @Override
+    public void saveSubscriptionUserInCourse (
+            UUID courseId,
+            UUID userId
+    ) {
+        courseRepository.saveCourseUser(courseId, userId);
     }
 
 }
