@@ -35,10 +35,10 @@ public class CourseUserController {
     public ResponseEntity<Object> getAllUsersByCourse (
             SpecificationTemplate.UserSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
-            @PathVariable(value = "courseId") UUID courseId
+            @PathVariable UUID courseId
     ) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        if(!courseModelOptional.isPresent()){
+        if(courseModelOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(userService
@@ -51,11 +51,11 @@ public class CourseUserController {
 
     @PostMapping("/courses/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse (
-            @PathVariable(value = "courseId") UUID courseId,
+            @PathVariable UUID courseId,
             @RequestBody @Valid SubscriptionDto subscriptionDto
     ) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        if (!courseModelOptional.isPresent()) {
+        if (courseModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
 
@@ -64,14 +64,14 @@ public class CourseUserController {
         }
 
         Optional<UserModel> userModelOptional = userService.findById(subscriptionDto.getUserId());
-        if (!userModelOptional.isPresent()) {
+        if (userModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
         if (userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.toString())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.");
         }
 
-        courseService.saveSubscriptionUserInCourse(courseModelOptional.get().getCourseId(), userModelOptional.get().getUserId());
+        courseService.saveSubscriptionUserInCourseAndSendNotification(courseModelOptional.get(), userModelOptional.get());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.");
     }
