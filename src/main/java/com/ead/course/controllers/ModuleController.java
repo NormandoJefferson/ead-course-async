@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ public class ModuleController {
     @Autowired
     CourseService courseService;
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @PostMapping("/courses/{courseId}/modules")
     public ResponseEntity<Object> saveModule (
             @PathVariable(value = "courseId") UUID courseId,
@@ -54,6 +56,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleModel);
     }
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @DeleteMapping("courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> deleteModule (
             @PathVariable(value = "courseId") UUID courseId,
@@ -70,6 +73,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
     }
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @PutMapping("courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> updateModule (
             @PathVariable(value = "courseId") UUID courseId,
@@ -90,6 +94,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body(moduleModel);
     }
 
+    @PreAuthorize("hasAnyHole('STUDENT')")
     @GetMapping("courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> getOneModule (
             @PathVariable(value = "courseId") UUID courseId,
@@ -102,6 +107,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body(moduleModelOptional.get());
     }
 
+    @PreAuthorize("hasAnyHole('STUDENT')")
     @GetMapping("/courses/{courseId}/modules")
     public ResponseEntity<Page<ModuleModel>> getAllModules (
             @PathVariable(value = "courseId") UUID courseId,
@@ -112,5 +118,4 @@ public class ModuleController {
                 SpecificationTemplate.moduleCourseId(courseId).and(moduleSpec), pageable);
         return ResponseEntity.status(HttpStatus.OK).body(moduleModelPage);
     }
-
 }

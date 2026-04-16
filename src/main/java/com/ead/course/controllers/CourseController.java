@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class CourseController {
     @Autowired
     CourseValidator courseValidator;
 
+    @PreAuthorize("hasAnyHole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses (
             SpecificationTemplate.CourseSpec spec,
@@ -54,6 +56,7 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasAnyHole('STUDENT')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getOneCourse (
             @PathVariable(value = "courseId") UUID courseId
@@ -65,6 +68,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(courseModelOptional.get());
     }
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveCourse (
             @RequestBody CourseDto courseDto,
@@ -90,6 +94,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseModel);
     }
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Object> deleteCourse (
             @PathVariable(value = "courseId") UUID courseId
@@ -105,6 +110,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.");
     }
 
+    @PreAuthorize("hasAnyHole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse (
             @PathVariable(value = "courseId") UUID courseId,
